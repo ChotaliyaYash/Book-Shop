@@ -7,7 +7,7 @@ const cookieParser = require('cookie-parser');
 const Connect = require('./utils/database_connect');
 
 // options imports on mode
-const mode = process.env.NODE_ENV;
+const mode = process.env.NODE_ENV || 'production';
 
 if (mode === 'development') {
     require('dotenv').config();
@@ -18,20 +18,23 @@ const port = process.env.PORT || 4000;
 const mongoString = process.env.MONGO_STRING || "localhost";
 
 // const varibales
+const dbURL = process.env.MONGO_ATLAS_STRING || `mongodb://${mongoString}:27017/books-project`;
 
 // Set up express
 const app = express();
 app.use(express.json());
 app.use(cors());
+app.use(cookieParser());
 
 // All Logs
 console.log(`Mode: ${mode}`);
+console.log(`Database URL: ${dbURL}`);
 
 // Import routes
-
+const bookCollectionRouter = require('./routers/bookCollectionRouter');
+app.use('/api/book-collection', bookCollectionRouter);
 
 // Connect to MongoDB
-const dbURL = `mongodb://${mongoString}:27017/book`;
 Connect(dbURL);
 
 // Error handling
